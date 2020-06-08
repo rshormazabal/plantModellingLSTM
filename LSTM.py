@@ -5,10 +5,10 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+import json
 import matplotlib.pyplot as plt
 from datasets import plantData
 from networks import LSTM
-import json
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -29,12 +29,12 @@ val_loader = DataLoader(val_set, batch_size=64, shuffle=False)
 input_dim = 55
 hidden_dim = 100
 
-model = LSTM(input_dim, hidden_dim, layer_dim=1, output_dim=1, bidirectional=True)
+model = LSTM(input_dim, hidden_dim, layer_dim=5, output_dim=1, bidirectional=True)
 model = model.to(device)
 criterion = torch.nn.MSELoss(reduction='sum')
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
-#scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5)
+# scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5)
 
 #####################
 # Train model
@@ -105,7 +105,7 @@ for epoch in range(num_epochs):
         print('Learning rate: {}'.format(optimizer.param_groups[0]['lr']))
         print("Validation loss change previous epoch: {} ".format(val_change))
         print("-------------------------------------------------")
-    #scheduler.step(val_loss)
+    # scheduler.step(val_loss)
 
 y_pred, y_real = np.array([]), np.array([])
 
@@ -187,7 +187,6 @@ results = {'test_set': {'name': 'Sequence magical-720m test-set', 'timestamp': t
             'train_set': {'name': 'Sequence720m magical-train-set', 'timestamp': timestamp_train,
                           'y_pred_train': list(y_pred_train), 'y_real_train': list(y_real_train)}}}
 
-# saving json files
-import json
+
 
 json.dump(results, open('data/results/magical-colb-720-35.json', "w"))

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <!-- Color Scale -->
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+</head>
+<body>
+    <input type="checkbox" id="Responses" onclick="briclight()">Responses</input>
+    <input type="checkbox" id="Control variables" onclick="mistlight()">Control variables</input>
+    <div id='vis-container'>
+        Variables
+    </div>
+
+    <!-- Create a div where the graph will take place -->
+    <div id="my_dataviz"></div>
+
+    <script>
+
+        d3.csv('all_data_raw.csv', function(data){
+            var variableMap = {};
+            data.columns.forEach(function(d){
+                var variable = d;
+                variableMap[variable] = []
+
+                data.forEach(function(d){
+                    variableMap[variable].push(d[variable])})
+            }
+            )
+
+            var dropdownChange = function() {
+                        var newVariable = d3.select(this).property('value'),
+                            newData = variableMap[newVariable];
+                        updateBars(newData);
+                    };
+
+            var updateBars = function(data) {}
+            
+            var variables = Object.keys(variableMap);
+            var dropdown = d3.select("#vis-container")
+                .insert("select", "svg")
+                .on("change", dropdownChange);
+
+            dropdown.selectAll("option")
+                    .data(variables)
+                    .enter().append("option")
+                    .attr("value", function (d) { return d; })
+                    .text(function (d) {
+                        return d[0].toUpperCase() + d.slice(1,d.length); // capitalize 1st letter
+                    });
+                }
+        )
+    </script>
+</body>
+<script src='linePlotZoom.js'></script>
